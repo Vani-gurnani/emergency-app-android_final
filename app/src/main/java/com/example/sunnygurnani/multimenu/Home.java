@@ -7,8 +7,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.hardware.Camera;
+import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.telephony.SmsManager;
@@ -230,8 +232,22 @@ public class Home extends Fragment implements LocationListener{
                     } else {
                         Toast.makeText(getActivity(), "Sim card not available", Toast.LENGTH_LONG).show();
                     }
+
+
+                    // Getting LocationManager object from System Service LOCATION_SERVICE
+                    LocationManager locationManager = (LocationManager)getActivity().getSystemService(getActivity().LOCATION_SERVICE);
+
+                    // Creating a criteria object to retrieve provider
+                    Criteria criteria = new Criteria();
+
+                    // Getting the name of the best provider
+                    String provider = locationManager.getBestProvider(criteria, true);
+
+                    // Getting Current Location From GPS
+                    Location location = locationManager.getLastKnownLocation(provider);
+
                     //will send messages to the contacts saved.
-                    sendsms("I need help.");
+                    sendsms("I need help. I am at Latitude=" + location.getLatitude() + " Longitude=" + location.getLongitude() + "  http://maps.google.com/?q="+ location.getLatitude()+","+location.getLongitude());
 
                     break;
                 case R.id.button:
@@ -296,6 +312,7 @@ public class Home extends Fragment implements LocationListener{
     // function created for sending messages.
     public void sendsms(String sms) {
         SmsManager smsManager = SmsManager.getDefault();
+
         if (contact1.getPhoneNumber() != null)
             smsManager.sendTextMessage(contact1.getPhoneNumber(), null, sms, null, null);
 
@@ -340,6 +357,9 @@ public class Home extends Fragment implements LocationListener{
 
     }
 }
+
+
+
 
 
 
